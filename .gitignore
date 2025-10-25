@@ -32,3 +32,5 @@ REKA_API_KEY
 *.key
 .env
 .env.*
+
+reka

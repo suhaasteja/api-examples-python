@@ -95,7 +95,7 @@ def call_reka_vision_qa(video_id: str) -> Dict[str, Any]:
         "messages": [
             {
                 "role": "user",
-                "content": "Write a funny and gently roast about the person, or the voice in this video. Reply in a markdown format."
+                "content": "at 2:50s what is the conversation about. return the whole transcript for the 5 seconds before to understand the context"
             }
         ]
     }
@@ -247,19 +247,6 @@ def upload_video() -> Dict[str, Any]:
 def process_video() -> Dict[str, Any]:
     """
     Process the selected video by calling the external Reka chat API.
-
-    We still optionally build a local metadata summary (kept for potential
-    future UI use), but the primary output shown to the user is the
-    `chat_response` returned by the external API. If `chat_response` is null
-    we fall back to `system_message`, then `error`.
-
-    Expects JSON body: { "video_id": "uuid" }
-
-    Returns:
-        Dict[str, Any]: JSON response with fields:
-            success (bool)
-            result (str) when success
-            error (str) when not successful
     """
     data = request.get_json() or {}
     video_id = data.get('video_id')
@@ -287,7 +274,21 @@ def process_video() -> Dict[str, Any]:
                     content_parts = []
                     for section in sections:
                         if isinstance(section, dict) and 'section_content' in section:
-                            content_parts.append(section['section_content'])
+                            content = section['section_content']
+                            # Only add if it's a string (markdown sections)
+                            if isinstance(content, str):
+                                content_parts.append(content)
+                            # For dict content (like video-clips-info), convert to readable format
+                            elif isinstance(content, dict):
+                                # You can format this however you want
+                                # Option 1: Just stringify it
+                                content_parts.append(json.dumps(content, indent=2))
+                                
+                                # Option 2: Extract video clip info nicely (uncomment to use)
+                                # if 'video_clips' in content:
+                                #     for clip in content['video_clips']:
+                                #         clip_text = f"[{clip['video_clip_start_time']}s-{clip['video_clip_end_time']}s]: {clip['video_clip_info']}"
+                                #         content_parts.append(clip_text)
 
                     if content_parts:
                         roast_content = '\n\n'.join(content_parts)
@@ -304,7 +305,6 @@ def process_video() -> Dict[str, Any]:
     if not fallback:
         fallback = "Unknown error: chat_response missing."
     return jsonify({"success": False, "error": fallback})
-
 
 
 if __name__ == '__main__':
