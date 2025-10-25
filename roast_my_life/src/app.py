@@ -243,6 +243,185 @@ def upload_video() -> Dict[str, Any]:
         return jsonify({"success": False, "error": f"Upload failed: {str(e)}"}), 500
 
 
+@app.route('/api/chat', methods=['POST'])
+def chat_with_video() -> Dict[str, Any]:
+    """
+    Chat with a video using the Reka Video QA API.
+    Follows documentation from: https://docs.reka.ai/video-qa
+    
+    Expects JSON body: { 
+        "video_id": "uuid",
+        "message": "user's question",
+        "conversation_history": [] // optional, list of previous messages
+    }
+    
+    Returns:
+        Dict[str, Any]: JSON response with fields:
+            success (bool)
+            response (str) - the AI's response
+            error (str) when not successful
+    """
+    data = request.get_json() or {}
+    video_id = data.get('video_id')
+    user_message = data.get('message', '').strip()
+    conversation_history = data.get('conversation_history', [])
+    
+    if not video_id:
+        return jsonify({"error": "No video ID provided"}), 400
+    
+    if not user_message:
+        return jsonify({"error": "No message provided"}), 400
+    
+    # Build messages array following documentation format
+    messages = []
+    
+    # Add previous conversation messages
+    # Format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+    for msg in conversation_history:
+        messages.append({
+            "role": msg.get("role"),
+            "content": msg.get("content")
+        })
+    
+    # Add current user message
+    messages.append({
+        "role": "user",
+        "content": user_message
+    })
+    
+    # Call Reka Video QA API following documentation
+    headers = {
+        "X-Api-Key": api_key,
+        "Content-Type": "application/json"
+    }
+    
+    # Payload following documentation structure
+    payload = {
+        "video_id": video_id,
+        "messages": messages
+    }
+    
+    try:
+        resp = requests.post(
+            REKA_VIDEO_QA_ENDPOINT,  # Uses /qa/chat endpoint
+            headers=headers,
+            json=payload,
+            timeout=60
+        )
+        
+        # Parse response
+        try:
+            response_data = resp.json()
+        except Exception:
+            response_data = {"error": f"Non-JSON response (status {resp.status_code})"}
+        
+        if resp.ok:
+            # According to docs, response contains "answer" field
+            answer = response_data.get('answer')
+            
+            # Fallback to other possible field names for compatibility
+            if not answer:
+                answer = response_data.get('chat_response')
+            
+            if answer:
+                response_text = answer
+                
+                # Handle structured JSON response if present
+                if isinstance(answer, str) and answer.strip().startswith('{'):
+                    try:
+                        import json
+                        parsed = json.loads(answer)
+                        
+                        # Check if it's the sections format
+                        if isinstance(parsed, dict) and 'sections' in parsed:
+                            sections = parsed.get('sections', [])
+                            content_parts = []
+                            
+                            for section in sections:
+                                if isinstance(section, dict) and 'section_content' in section:
+                                    content = section['section_content']
+                                    
+                                    # Handle markdown sections
+                                    if isinstance(content, str):
+                                        content_parts.append(content)
+                                    
+                                    # Handle video clips sections
+                                    elif isinstance(content, dict) and 'video_clips' in content:
+                                        clips_markdown = []
+                                        for clip in content['video_clips']:
+                                            start = clip.get('video_clip_start_time', 0)
+                                            end = clip.get('video_clip_end_time', 0)
+                                            info = clip.get('video_clip_info', '')
+                                            clips_markdown.append(
+                                                f"**⏱️ [{start}s - {end}s]**: {info}"
+                                            )
+                                        if clips_markdown:
+                                            content_parts.append('\n\n'.join(clips_markdown))
+                            
+                            if content_parts:
+                                response_text = '\n\n'.join(content_parts)
+                    
+                    except (json.JSONDecodeError, ValueError):
+                        # Not JSON or parsing failed, use as-is
+                        pass
+                
+                # Convert markdown to HTML
+                html_response = simple_markdown_to_html(response_text)
+                
+                return jsonify({
+                    "success": True, 
+                    "response": html_response,
+                    "raw_response": response_text,
+                    "confidence": response_data.get('confidence'),  # Include confidence if available
+                    "timestamp": response_data.get('timestamp')     # Include timestamp if available
+                })
+            
+            # No answer field found
+            return jsonify({
+                "error": f"No answer in response. Available fields: {list(response_data.keys())}"
+            }), 500
+            
+        else:
+            # Error response
+            error_msg = response_data.get('error') or response_data.get('message') or f"HTTP {resp.status_code}"
+            return jsonify({"error": f"Chat failed: {error_msg}"}), resp.status_code
+            
+    except requests.Timeout:
+        return jsonify({"error": "Request timed out"}), 504
+    except Exception as e:
+        return jsonify({"error": f"Chat failed: {str(e)}"}), 500
+
+@app.route('/chat/<video_id>')
+def chat_page(video_id: str) -> str:
+    """
+    Render the chat interface for a specific video.
+    
+    Args:
+        video_id: UUID of the video to chat about
+        
+    Returns:
+        str: Rendered HTML template for the chat page
+    """
+    videos = fetch_videos()
+    
+    # Find the video
+    video = None
+    for v in videos:
+        if v.get("video_id") == video_id:
+            meta = v.get("metadata", {})
+            video = {
+                "id": v.get("video_id"),
+                "name": meta.get("title") or meta.get("video_name") or "Untitled",
+                "thumbnail": meta.get("thumbnail") or "/static/images/image1.jpg",
+                "url": v.get("url") or meta.get("url") or "",
+            }
+            break
+    
+    if not video:
+        return "Video not found", 404
+    
+    return render_template('chat.html', video=video)
+
 @app.route('/api/process', methods=['POST'])
 def process_video() -> Dict[str, Any]:
     """

@@ -28,42 +28,51 @@
                 Pick a video below and click <strong>Roast Video</strong>. We'll send it to the Vision
                 chat endpoint with a gentle roast prompt and display the model's playful commentary.
             </p>
+<div class="image-grid" id="videoGrid">
+    <!-- Add Video Card -->
+    <div class="image-card add-card" id="addVideoCard" onclick="showAddVideoPopup()">
+        <div class="plus-icon">+</div>
+        <h3>Add Video</h3>
+    </div>
+    {% for video in videos %}
+    <div class="image-card" data-id="{{ video.id }}" data-url="{{ video.url }}" onclick="selectVideo('{{ video.id }}')">
+        {% if video.thumbnail %}
+        <img src="{{ video.thumbnail }}" alt="{{ video.name }}" onerror="this.parentElement.querySelector('.thumbnail-placeholder').style.display='flex'; this.style.display='none';">
+        <div class="thumbnail-placeholder" style="display: none;">
+            <div class="thumbnail-spinner"></div>
+            <p>Processing...</p>
+        </div>
+        {% else %}
+        <div class="thumbnail-placeholder">
+            <div class="thumbnail-spinner"></div>
+            <p>Processing...</p>
+        </div>
+        {% endif %}
+        <h3>{{ video.name }}</h3>
+        
+        <!-- Add action buttons directly on each video card -->
+        <div class="card-actions">
+            <button class="card-btn roast-btn" onclick="event.stopPropagation(); selectAndRoast('{{ video.id }}')">
+                🔥 Roast
+            </button>
+            <button class="card-btn chat-btn" onclick="event.stopPropagation(); window.location.href='/chat/{{ video.id }}'">
+                💬 Chat
+            </button>
+        </div>
+    </div>
+    {% else %}
+    <p>No videos available. Check API configuration.</p>
+    {% endfor %}
+</div>
 
-            <div class="image-grid" id="videoGrid">
-                <!-- Add Video Card -->
-                <div class="image-card add-card" id="addVideoCard" onclick="showAddVideoPopup()">
-                    <div class="plus-icon">+</div>
-                    <h3>Add Video</h3>
-                </div>
-                {% for video in videos %}
-                <div class="image-card" data-id="{{ video.id }}" data-url="{{ video.url }}" onclick="selectVideo('{{ video.id }}')">
-                    {% if video.thumbnail %}
-                    <img src="{{ video.thumbnail }}" alt="{{ video.name }}" onerror="this.parentElement.querySelector('.thumbnail-placeholder').style.display='flex'; this.style.display='none';">
-                    <div class="thumbnail-placeholder" style="display: none;">
-                        <div class="thumbnail-spinner"></div>
-                        <p>Processing...</p>
-                    </div>
-                    {% else %}
-                    <div class="thumbnail-placeholder">
-                        <div class="thumbnail-spinner"></div>
-                        <p>Processing...</p>
-                    </div>
-                    {% endif %}
-                    <h3>{{ video.name }}</h3>
-                </div>
-                {% else %}
-                <p>No videos available. Check API configuration.</p>
-                {% endfor %}
-            </div>
-
-            <div class="button-container">
-                <button class="btn" id="processBtn" onclick="processVideo()" disabled>
-                    Roast Video
-                </button>
-                <button class="btn btn-secondary" id="watchBtn" onclick="watchVideo()" disabled>
-                    Watch Video
-                </button>
-            </div>
+<div class="button-container">
+    <button class="btn" id="processBtn" onclick="processVideo()" disabled>
+        Roast Video
+    </button>
+    <button class="btn btn-secondary" id="watchBtn" onclick="watchVideo()" disabled>
+        Watch Video
+    </button>
+</div>
 
             <div class="error-message" id="errorMessage"></div>
 
@@ -101,8 +110,33 @@
     </footer>
 
     <script>
-    let selectedVideoId = null;
-    let selectedVideoUrl = null;
+        let selectedVideoId = null;
+let selectedVideoUrl = null;
+
+    /**
+     * Select a video and immediately process it for roasting
+     */
+    function selectAndRoast(videoId) {
+        selectVideo(videoId);
+        processVideo();
+    }
+
+    /**
+     * Show the Add Video popup form.
+     */
+    function showAddVideoPopup() {
+        document.getElementById('addVideoPopup').style.display = 'flex';
+        document.getElementById('videoName').value = '';
+        document.getElementById('videoUrl').value = '';
+        document.getElementById('popupError').textContent = '';
+    }
+
+    /**
+     * Hide the Add Video popup form.
+     */
+    function hideAddVideoPopup() {
+        document.getElementById('addVideoPopup').style.display = 'none';
+    }
 
         /**
          * Show the Add Video popup form.
