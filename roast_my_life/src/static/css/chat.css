@@ -1,0 +1,57 @@
+/* Chat Response Styling */
+.video-clip-section {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.timestamp-info {
+    color: #495057;
+    font-size: 14px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.timestamp-info strong {
+    color: #007bff;
+}
+
+.clip-info {
+    line-height: 1.6;
+    color: #212529;
+}
+
+.section-content {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.section-content pre {
+    background: #f1f3f4;
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Chat message styling */
+.message-content {
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.message-content .video-clip-section:first-child {
+    margin-top: 0;
+}
+
+.message-content .video-clip-section:last-child {
+    margin-bottom: 0;
+}

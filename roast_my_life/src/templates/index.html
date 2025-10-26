@@ -3,57 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roast My Life - AI Video Commentary</title>
+    <title>AI Language Learning Assistant - Learn Through Video</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>Roast My Life</h1>
-            <p>Playful AI commentary (aka gentle roasting) powered by Reka Vision</p>
+            <h1>🌍 AI Language Learning Assistant</h1>
+            <p>Learn languages naturally through AI-powered video conversations</p>
         </div>
     </header>
 
     <nav>
         <ul>
             <li><a href="/" class="active">Home</a></li>
-            <li><a href="/form">Roast a Video</a></li>
+            <li><a href="/form">Select Video</a></li>
         </ul>
     </nav>
 
     <div class="container">
         <div class="welcome-section">
-            <h2>Welcome to Roast My Life 🎉</h2>
+            <h2>Welcome to Your AI Language Learning Assistant 🎉</h2>
             <p>
-                This light‑hearted demo uses the <strong>Reka Vision API</strong> to gently roast the people
-                in your videos – like an AI best friend narrating your highlight (or lowlight) reel.
+                This interactive application uses the <strong>Reka Vision API</strong> to help you learn languages
+                through video content. Watch videos and chat with an AI tutor that understands what you're watching.
             </p>
             <p>
-                Select a video, send it to the model, and get back playful commentary. The output is
-                lightly sanitized Markdown converted to safe HTML.
+                Select a video, ask questions about phrases, grammar, or cultural context, and get instant explanations
+                with English translations. Perfect for visual learners!
             </p>
             
             <h3 style="color: #203F72; margin-top: 2rem; margin-bottom: 1rem;">Features</h3>
             <ul class="feature-list">
-                <li>Reka Vision chat integration for playful roasting</li>
-                <li>Dynamic video list fetched from your Vision backend</li>
-                <li>Responsive design & Docker support</li>
-                <li>Readable, well-commented Python code</li>
+                <li>🎥 Video-based learning with auto-play and timestamp jumping</li>
+                <li>💬 AI-powered chat that understands video context</li>
+                <li>🌐 Automatic English translations for foreign phrases</li>
+                <li>🧠 Grammar explanations and cultural context</li>
+                <li>📱 Responsive design that works on all devices</li>
             </ul>
 
-            <h3 style="color: #203F72; margin-top: 2rem; margin-bottom: 1rem;">Try It</h3>
+            <h3 style="color: #203F72; margin-top: 2rem; margin-bottom: 1rem;">How It Works</h3>
             <p>
-                Head over to <strong>Roast a Video</strong>, pick a clip, and click <em>Roast Video</em>.
-                The backend calls the Vision chat endpoint with a gentle roast prompt and shows the reply.
+                Head over to <strong>Select Video</strong>, pick a video, and click <em>💬 Start Learning</em>.
+                The video plays automatically while you chat with an AI tutor about what you're watching.
             </p>
             <p style="font-size: 0.9rem; color: #403E34; margin-top: 1.5rem;">
-                Disclaimer: Keep it friendly. Always review AI output before sharing publicly.
+                <strong>Tip:</strong> Ask specific questions about phrases, grammar, or cultural context for the best learning experience!
             </p>
         </div>
     </div>
 
     <footer>
-    <p>Roast My Life - Built with Flask &amp; ❤️ using Reka Vision</p>
+    <p>AI Language Learning Assistant - Built with Flask &amp; ❤️ using Reka Vision</p>
     <p><a href="https://docs.reka.ai/vision" target="_blank" style="color:#2276FF;">Vision Docs</a> · <a href="https://link.reka.ai/free" target="_blank" style="color:#2276FF;">Get a FREE API Key</a></p>
     </footer>
 </body>

@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roast a Video - Roast My Life</title>
+    <title>Language Learning - Chat with Video</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <h1>Roast My Life</h1>
-            <p>AI-powered gentle roasting with Reka Vision</p>
+        <div class="header">
+            <h1>🌍 Language Learning Assistant</h1>
+            <!-- <button class="back-btn" onclick="window.location.href='/form'">← Back to Videos</button> -->
         </div>
     </header>
 
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/form" class="active">Roast a Video</a></li>
+            <li><a href="/form" class="active">Select Video</a></li>
         </ul>
     </nav>
 
     <div class="container">
         <div class="form-section">
-            <h2>Select a Video to Roast</h2>
+            <h2>Select a Video to Learn</h2>
             <p style="color: #403E34; margin-bottom: 2rem;">
-                Pick a video below and click <strong>Roast Video</strong>. We'll send it to the Vision
-                chat endpoint with a gentle roast prompt and display the model's playful commentary.
+                Pick a video below and click <strong>💬 Chat</strong> to start your language learning journey. 
+                Our AI assistant will help you understand phrases, grammar, and cultural context.
             </p>
 <div class="image-grid" id="videoGrid">
     <!-- Add Video Card -->
@@ -50,13 +50,10 @@
         {% endif %}
         <h3>{{ video.name }}</h3>
         
-        <!-- Add action buttons directly on each video card -->
+        <!-- Chat button -->
         <div class="card-actions">
-            <button class="card-btn roast-btn" onclick="event.stopPropagation(); selectAndRoast('{{ video.id }}')">
-                🔥 Roast
-            </button>
-            <button class="card-btn chat-btn" onclick="event.stopPropagation(); window.location.href='/chat/{{ video.id }}'">
-                💬 Chat
+            <button class="card-btn chat-btn" onclick="event.stopPropagation(); window.location.href='/chat/{{ video.id }}'" style="width: 100%;">
+                💬 Start Learning
             </button>
         </div>
     </div>

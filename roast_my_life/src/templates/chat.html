@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Chat</title>
+    <title>Language Learning - Chat with Video</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 80vw;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -63,37 +63,370 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            gap: 0;
         }
         
         .video-panel {
-            width: 400px;
-            background: #f8f9fa;
-            padding: 20px;
+            width: 75%;
+            min-width: 500px;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            position: relative;
             border-right: 1px solid #e0e0e0;
+            transition: width 0.3s ease;
+        }
+        
+        .video-panel.with-insights {
+            width: 60%;
+        }
+        
+        .video-wrapper {
+            flex: 1;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .video-controls {
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .play-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        .play-btn:hover {
+            background: #5a6fd8;
+            transform: scale(1.1);
+        }
+        
+        .time-display {
+            color: white;
+            font-size: 14px;
+            font-family: monospace;
+            min-width: 100px;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .insights-panel {
+            width: 0;
+            background: #f8f9fa;
+            overflow: hidden;
+            transition: width 0.3s ease;
+            border-left: 1px solid #e0e0e0;
             display: flex;
             flex-direction: column;
         }
         
+        .insights-panel.open {
+            width: 350px;
+        }
+        
+        .insights-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .insights-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .close-insights {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        
+        .close-insights:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .insights-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .toggle-insights-btn {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .toggle-insights-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .video-panel {
+                width: 70%;
+                min-width: 450px;
+            }
+            
+            .video-panel.with-insights {
+                width: 55%;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .chat-container {
+                flex-direction: column;
+            }
+            
+            .video-panel, .video-panel.with-insights {
+                width: 100%;
+                min-width: unset;
+                height: 350px;
+            }
+            
+            .insights-panel.open {
+                width: 100%;
+                max-height: 300px;
+            }
+            
+            .toggle-insights-btn {
+                bottom: 80px;
+                top: auto;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .video-panel {
+                height: 250px;
+            }
+            
+            .messages {
+                padding: 20px 15px;
+            }
+            
+            .input-container {
+                padding: 15px;
+            }
+            
+            .message-content {
+                max-width: 90%;
+            }
+            
+            .suggestion-chips {
+                gap: 6px;
+            }
+            
+            .chip {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+        
         .video-info {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .video-info h3 {
             font-size: 16px;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         
         .video-thumbnail {
             width: 100%;
             border-radius: 12px;
             overflow: hidden;
+            margin-bottom: 20px;
         }
         
         .video-thumbnail img {
             width: 100%;
             height: auto;
             display: block;
+        }
+        
+        .phrases-section {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .phrases-section h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .loading-phrases {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .phrase-item {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .phrase-item:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateX(4px);
+        }
+        
+        .phrase-text {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        
+        .phrase-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        .phrase-timestamp {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .phrase-category {
+            padding: 2px 6px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        
+        .phrase-item:hover .phrase-category {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .suggested-questions {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .suggested-questions h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .suggestion-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
         }
         
         .chat-panel {
@@ -135,6 +468,7 @@
             justify-content: center;
             font-weight: 600;
             flex-shrink: 0;
+            font-size: 14px;
         }
         
         .message.user .message-avatar {
@@ -148,11 +482,18 @@
         }
         
         .message-content {
-            max-width: 70%;
+            max-width: 75%;
             background: white;
-            padding: 12px 16px;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 16px 20px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            line-height: 1.6;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        
+        .message-content:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
         
         .message.user .message-content {
@@ -161,14 +502,123 @@
         }
         
         .message.assistant .message-content {
-            background: #f8f9fa;
-            color: #333;
+            background: #ffffff;
+            color: #2c3e50;
+            border: 1px solid #e9ecef;
+        }
+        
+        .message-content h1, .message-content h2, .message-content h3 {
+            margin-top: 16px;
+            margin-bottom: 12px;
+            color: inherit;
+        }
+        
+        .message-content h1 { font-size: 20px; }
+        .message-content h2 { font-size: 18px; }
+        .message-content h3 { font-size: 16px; }
+        
+        .message-content p {
+            margin: 8px 0;
+        }
+        
+        .message-content ul, .message-content ol {
+            margin: 8px 0;
+            padding-left: 24px;
+        }
+        
+        .message-content li {
+            margin: 4px 0;
+        }
+        
+        .message-content code {
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .message-content strong {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .message.user .message-content strong {
+            color: white;
+            font-weight: 700;
+        }
+        
+        .message-content hr {
+            border: none;
+            border-top: 2px solid #e9ecef;
+            margin: 16px 0;
         }
         
         .input-container {
             padding: 20px 30px;
             background: #f8f9fa;
             border-top: 1px solid #e0e0e0;
+        }
+        
+        .suggestion-chips {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .chip {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .chip:hover::before {
+            left: 100%;
+        }
+        
+        .chip:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .chip:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(102, 126, 234, 0.3);
         }
         
         .input-wrapper {
@@ -232,105 +682,116 @@
         
         .loading-dot:nth-child(1) { animation-delay: -0.32s; }
         .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        .researching-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+}
         
         @keyframes bounce {
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
-        }
-        
-        .suggested-questions {
-            padding: 15px;
-            background: white;
-            border-radius: 12px;
-            margin-top: 15px;
-        }
-        
-        .suggested-questions h4 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .suggestion-btn {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            color: #333;
-            transition: all 0.2s;
-        }
-        
-        .suggestion-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>💬 Chat with Video</h1>
+            <h1>🌍 Language Learning Assistant</h1>
             <button class="back-btn" onclick="window.location.href='/form'">← Back to Videos</button>
         </div>
         
         <div class="chat-container">
             <div class="video-panel">
-                <div class="video-info">
-                    <h3 id="video-name">{{ video.name }}</h3>
+                {% if video.video_url %}
+                <div class="video-wrapper">
+                    <video 
+                        id="video-player" 
+                        class="video-player"
+                        controls
+                        preload="metadata"
+                    >
+                        <source src="{{ video.video_url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
-                <div class="video-thumbnail">
-                    <img src="{{ video.thumbnail }}" alt="{{ video.name }}">
-                </div>
-                
-                <div class="suggested-questions">
-                    <h4>💡 Try asking:</h4>
-                    <button class="suggestion-btn" onclick="askQuestion('What is happening in this video?')">
-                        What is happening in this video?
-                    </button>
-                    <button class="suggestion-btn" onclick="askQuestion('Summarize the main points')">
-                        Summarize the main points
-                    </button>
-                    <button class="suggestion-btn" onclick="askQuestion('What happens at 1:30?')">
-                        What happens at 1:30?
-                    </button>
-                    <button class="suggestion-btn" onclick="askQuestion('Write a funny roast about this')">
-                        Write a funny roast about this
+                {% else %}
+                <div class="video-wrapper" style="justify-content: center; align-items: center; flex-direction: column;">
+                    <div style="color: #999; font-size: 18px; margin-bottom: 20px;">📹</div>
+                    <p style="color: #999; margin-bottom: 20px;">No video URL available</p>
+                    <button 
+                        class="play-btn" 
+                        onclick="window.open('{{ video.url }}', '_blank')"
+                        style="width: auto; padding: 12px 24px; border-radius: 8px;"
+                    >
+                        🌐 Watch in New Tab
                     </button>
                 </div>
+                {% endif %}
             </div>
             
             <div class="chat-panel">
                 <div class="messages" id="messages"></div>
                 
                 <div class="input-container">
+                    <div class="suggestion-chips" id="suggestion-chips">
+                        <div class="chip" onclick="askQuestion('What language is being spoken?')">What language is this?</div>
+                        <div class="chip" onclick="askQuestion('Explain what they\'re saying')">Translate this scene</div>
+                        <div class="chip" onclick="askQuestion('What\'s the cultural context?')">Cultural context</div>
+                        <div class="chip" onclick="askQuestion('Explain the grammar')">Grammar help</div>
+                    </div>
                     <div class="input-wrapper">
                         <textarea 
                             id="user-input" 
-                            placeholder="Ask anything about this video..."
+                            placeholder="Ask me a question.."
                             rows="1"
                         ></textarea>
                         <button class="send-btn" id="send-btn" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
             </div>
+            
+            <!-- Collapsible Insights Panel -->
+            <div class="insights-panel" id="insights-panel">
+                <div class="insights-header">
+                    <h3>📚 Learning Insights</h3>
+                    <button class="close-insights" onclick="toggleInsights()">×</button>
+                </div>
+                <div class="insights-content">
+                    <div id="phrases-section">
+                        <h4 style="font-size: 14px; color: #666; margin-bottom: 12px;">📚 Interesting Phrases</h4>
+                        <div id="loading-phrases" class="loading-phrases">
+                            <div class="loading-spinner"></div>
+                            <span>Analyzing video...</span>
+                        </div>
+                        <div id="phrases-list"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    
+    <!-- Floating Toggle Button -->
+    <button class="toggle-insights-btn" id="toggle-insights-btn" onclick="toggleInsights()">
+        💡
+    </button>
     
     <script>
         const videoId = "{{ video.id }}";
         let conversationHistory = [];
         let isProcessing = false;
+        let extractedPhrases = [];
         
         const messagesContainer = document.getElementById('messages');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
+        const videoPlayer = document.getElementById('video-player');
         
         // Auto-resize textarea
         userInput.addEventListener('input', function() {
@@ -346,13 +807,147 @@
             }
         });
         
+        // Format time helper (seconds to MM:SS)
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Toggle insights panel
+        function toggleInsights() {
+            const panel = document.getElementById('insights-panel');
+            const videoPanel = document.querySelector('.video-panel');
+            const isOpen = panel.classList.contains('open');
+            
+            if (isOpen) {
+                panel.classList.remove('open');
+                videoPanel.classList.remove('with-insights');
+            } else {
+                panel.classList.add('open');
+                videoPanel.classList.add('with-insights');
+            }
+        }
+        
+        // Load phrases on page load (DISABLED to save tokens)
+        // window.addEventListener('load', function() {
+        //     loadInterestingPhrases();
+        // });
+        
+async function loadInterestingPhrases() {
+    try {
+        const response = await fetch('/api/analyze_video', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                video_id: videoId
+            })
+        });
+        
+        const data = await response.json();
+        
+        document.getElementById('loadingPhrases').style.display = 'none';
+        
+        if (data.success && data.items && data.items.length > 0) {
+            extractedPhrases = data.items;
+            
+            // Update header with language and topic info
+            if (data.primary_language || data.video_topic) {
+                const infoText = `
+                    <div style="font-size: 12px; color: #666; margin-bottom: 12px; padding: 8px; background: #f0f0f0; border-radius: 6px;">
+                        ${data.primary_language ? `🗣️ Language: <strong>${data.primary_language}</strong><br>` : ''}
+                        ${data.video_topic ? `📝 Topic: ${data.video_topic}` : ''}
+                    </div>
+                `;
+                document.getElementById('phrasesList').innerHTML = infoText;
+            }
+            
+            displayPhrases(data.items);
+        } else {
+            document.getElementById('phrasesList').innerHTML = 
+                '<p style="color: #999; font-size: 13px; padding: 10px;">No phrases extracted. Try asking questions!</p>';
+        }
+    } catch (error) {
+        document.getElementById('loadingPhrases').style.display = 'none';
+        document.getElementById('phrasesList').innerHTML = 
+            '<p style="color: #999; font-size: 13px; padding: 10px;">Failed to analyze video</p>';
+    }
+}
+
+        function displayPhrases(phrases) {
+            const phrasesList = document.getElementById('phrasesList');
+            phrasesList.innerHTML = '';
+            
+            phrases.forEach((phrase, index) => {
+                const phraseDiv = document.createElement('div');
+                phraseDiv.className = 'phrase-item';
+                phraseDiv.onclick = () => handlePhraseClick(phrase);
+                
+                const icon = phrase.category === 'language_learning' ? '📖' : '🔍';
+                
+                phraseDiv.innerHTML = `
+                    <div class="phrase-text">${icon} ${phrase.phrase}</div>
+                    <div class="phrase-meta">
+                        <span class="phrase-timestamp">⏱️ ${phrase.timestamp}s</span>
+                        <span class="phrase-category">${phrase.category}</span>
+                    </div>
+                `;
+                
+                phrasesList.appendChild(phraseDiv);
+            });
+        }
+        
+        async function handlePhraseClick(phrase) {
+    // Show that we're researching
+    addMessage('user', `Tell me more about: "${phrase.phrase}"`);
+    addLoadingMessage();
+    
+    try {
+        const response = await fetch('/api/explore_phrase', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                video_id: videoId,
+                phrase_data: phrase
+            })
+        });
+        
+        const data = await response.json();
+        
+        removeLoadingMessage();
+        
+        if (data.success) {
+            addMessage('assistant', data.response, true);
+            
+            // Add to conversation history
+            conversationHistory.push({
+                role: 'user',
+                content: `Tell me more about: "${phrase.phrase}"`
+            });
+            conversationHistory.push({
+                role: 'assistant',
+                content: data.raw_response
+            });
+        } else {
+            addMessage('assistant', `Error: ${data.error}`);
+        }
+    } catch (error) {
+        removeLoadingMessage();
+        addMessage('assistant', `Error: ${error.message}`);
+    }
+}
+        
         function addMessage(role, content, isHtml = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
             
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
-            avatar.textContent = role === 'user' ? 'You' : 'AI';
+            avatar.textContent = role === 'user' ? '👤' : '🤖';
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
@@ -367,7 +962,6 @@
             messageDiv.appendChild(contentDiv);
             messagesContainer.appendChild(messageDiv);
             
-            // Scroll to bottom
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
         
@@ -378,7 +972,7 @@
             
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
-            avatar.textContent = 'AI';
+            avatar.textContent = '🤖';
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content loading';
@@ -397,9 +991,53 @@
                 loadingMsg.remove();
             }
         }
+
+        function addLoadingMessage(isResearch = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message assistant';
+    messageDiv.id = 'loading-message';
+    
+    const avatar = document.createElement('div');
+    avatar.className = 'message-avatar';
+    avatar.textContent = '🤖';
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content loading';
+    
+    const loadingText = isResearch 
+        ? '<div>Analyzing video + researching web...</div>'
+        : '';
+    
+    contentDiv.innerHTML = `
+        ${loadingText}
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+    `;
+    
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(contentDiv);
+    messagesContainer.appendChild(messageDiv);
+    
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
         
         function askQuestion(question) {
-            userInput.value = question;
+            // Get current timestamp (works whether playing or paused)
+            let timestamp = null;
+            if (videoPlayer && videoPlayer.currentTime > 0) {
+                timestamp = Math.floor(videoPlayer.currentTime);
+            }
+            
+            // Add timestamp to question if available
+            if (timestamp !== null) {
+                userInput.value = `${question} (at ${formatTime(timestamp)})`;
+            } else {
+                userInput.value = question;
+            }
+            
             sendMessage();
         }
         
@@ -412,33 +1050,48 @@
             isProcessing = true;
             sendBtn.disabled = true;
             
-            // Add user message to UI
-            addMessage('user', message);
+            // Get current video timestamp (works whether playing or paused)
+            let currentTimestamp = null;
+            if (videoPlayer && videoPlayer.currentTime > 0) {
+                currentTimestamp = Math.floor(videoPlayer.currentTime);
+            }
+            console.log("currentTimestamp", currentTimestamp, "videoPlayer", videoPlayer, "currentTime", videoPlayer?.currentTime);
             
-            // Add to conversation history
+            // Add timestamp to user message if available
+            const displayMessage = currentTimestamp !== null 
+                ? `${message} <span style="color: #999; font-size: 12px;">[at ${formatTime(currentTimestamp)}]</span>`
+                : message;
+            
+            addMessage('user', displayMessage, true);
+            
             conversationHistory.push({
                 role: 'user',
                 content: message
             });
             
-            // Clear input
             userInput.value = '';
             userInput.style.height = 'auto';
             
-            // Show loading
             addLoadingMessage();
             
             try {
+                const requestBody = {
+                    video_id: videoId,
+                    message: message,
+                    conversation_history: conversationHistory.slice(0, -1)
+                };
+                
+                // Add timestamp if available
+                if (currentTimestamp !== null) {
+                    requestBody.current_timestamp = currentTimestamp;
+                }
+                
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        video_id: videoId,
-                        message: message,
-                        conversation_history: conversationHistory.slice(0, -1) // Exclude current message
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 const data = await response.json();
@@ -448,7 +1101,6 @@
                 if (data.success) {
                     addMessage('assistant', data.response, true);
                     
-                    // Add assistant response to history
                     conversationHistory.push({
                         role: 'assistant',
                         content: data.raw_response || data.response
@@ -467,7 +1119,7 @@
         }
         
         // Add welcome message
-        addMessage('assistant', 'Hi! I can help you understand this video. Ask me anything about what\'s happening, get timestamps, or request a summary!');
+        addMessage('assistant', '👋 Hi! I\'m your language learning assistant. I\'ve analyzed this video and found some interesting phrases and facts in the sidebar. Click on any of them to learn more, or ask me anything!');
     </script>
 </body>
 </html>

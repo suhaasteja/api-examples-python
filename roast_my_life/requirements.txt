@@ -3,3 +3,5 @@ Werkzeug==3.0.1
 python-dotenv==1.1.1
 requests==2.31.0
 markdown>=3.4.0
+openai>=1.0.0
+pydantic>=2.0.0
